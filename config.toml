@@ -1,0 +1,50 @@
+# Default tunables for the measurement harness. Conservative-but-realistic defaults
+# drawn from the research; every number here is meant to be overridden once we have
+# MEASURED values (real latency from Phase 1, real fills from Phase 5 dust trades).
+
+[network]
+chain = "solana"
+gecko_network = "solana"   # GeckoTerminal network slug
+
+[backtest]
+# Exit horizons evaluated for every call. Phase 0.5 answers: at which (if any) does
+# this channel have a real, latency-survivable edge?
+horizons = ["30s", "5m", "15m", "1h", "4h", "1d"]
+# A call's token with no locatable pool / no liquidity is scored as a total loss
+# (you could not have profitably exited) — this keeps the dead-token denominator honest.
+unsellable_is_total_loss = true
+
+[cost_model]
+# End-to-end reaction+broadcast+land latency (seconds). PLACEHOLDER until Phase 1
+# measures it for real; the public-signal edge is gone if this is too large.
+latency_seconds = 3.0
+
+# Per-side slippage for microcaps (basis points). Memecoin launches are 5-10%+.
+entry_slippage_bps = 300
+exit_slippage_bps = 300
+
+# Venue fees (basis points). pump.fun bonding-curve fee is DYNAMIC by market cap
+# (~95bps under $300k MC down to ~5bps above $1M); PumpSwap AMM ~30bps.
+pumpfun_fee_bps = 95
+pumpswap_fee_bps = 30
+
+# Fixed per-transaction costs in SOL (priority fee + Jito tip). Charged on BOTH the
+# buy and the sell tx — deliberately heavy on small tickets, which is the point.
+priority_fee_sol = 0.001
+jito_tip_sol = 0.005
+
+# Sandwich/MEV drag per round trip (bps). ~70 with protection, ~300 without.
+mev_drag_bps = 70
+
+# Notional per simulated trade (SOL). Drives how badly fixed SOL costs bite.
+trade_size_sol = 0.1
+
+[risk_governor]
+# NOT used in Phase 0.5 (no capital). Defaults for later live phases.
+speculative_sleeve_usd = 300        # the most you'd accept TOTALLY losing
+per_trade_fraction = 0.01           # flat tiny fraction of the sleeve, survival-first
+max_concurrent_positions = 6
+daily_loss_limit_fraction = 0.05
+soft_limit_fraction = 0.65          # personal stop at 65% of the hard daily limit
+recover_principal_at_multiple = 2.0 # sell to recover stake by 2x ("house money")
+moonbag_trailing_stop_pct = 0.25

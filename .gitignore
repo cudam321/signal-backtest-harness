@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+.pytest_cache/
+
+# Secrets & local config
+.env
+*.session
+*.session-journal
+
+# Data / outputs
+data_cache/
+runs/
+*.duckdb
+*.sqlite
+reports/
+
+# OS
+.DS_Store
